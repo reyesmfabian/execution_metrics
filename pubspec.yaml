@@ -1,11 +1,11 @@
 name: execution_metrics
 description: "A Flutter plugin for obtaining function execution metrics in a Flutter / Dart app."
-version: 1.0.0
+version: 1.0.1
 homepage: https://smart-dev.com.co
 repository: https://github.com/reyesmfabian/execution_metrics 
 
 environment:
-  sdk: ">=3.2.3 <4.0.0"
+  sdk: ">=2.16.2 <4.0.0"
   flutter: ">=1.17.0"
 
 dependencies:
