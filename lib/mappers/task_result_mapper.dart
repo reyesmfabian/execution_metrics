@@ -7,6 +7,7 @@ String taskResultToJson(TaskResult data) => json.encode(data.toJson());
 
 class TaskResult {
   final String taskName;
+  final String? deviceInfo;
   final int minutes;
   final int seconds;
   final int milliseconds;
@@ -16,6 +17,7 @@ class TaskResult {
     required this.minutes,
     required this.seconds,
     required this.milliseconds,
+    this.deviceInfo = '',
   });
 
   factory TaskResult.fromJson(Map<String, dynamic> json) => TaskResult(
@@ -23,6 +25,7 @@ class TaskResult {
         minutes: json["minutes"],
         seconds: json["seconds"],
         milliseconds: json["milliseconds"],
+        deviceInfo: json["deviceInfo"] ?? '',
       );
 
   Map<String, dynamic> toJson() => {
@@ -30,5 +33,6 @@ class TaskResult {
         "minutes": minutes,
         "seconds": seconds,
         "milliseconds": milliseconds,
+        "deviceInfo": deviceInfo,
       };
 }

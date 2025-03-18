@@ -6,7 +6,7 @@ void main() {
   group('TaskResult', () {
     test('fromJson', () {
       const jsonString =
-          '{"taskName":"Test Task","minutes":2,"seconds":30,"milliseconds":500}';
+          '{"taskName":"Test Task","minutes":2,"seconds":30,"milliseconds":500,"deviceInfo": "iPhone 7 - iOS 15.8.3"}';
 
       final result = taskResultFromJson(jsonString);
 
@@ -14,6 +14,7 @@ void main() {
       expect(result.minutes, equals(2));
       expect(result.seconds, equals(30));
       expect(result.milliseconds, equals(500));
+      expect(result.deviceInfo, equals('iPhone 7 - iOS 15.8.3'));
     });
 
     test('toJson', () {
@@ -22,11 +23,12 @@ void main() {
         minutes: 2,
         seconds: 30,
         milliseconds: 500,
+        deviceInfo: 'iPhone 7 - iOS 15.8.3',
       );
 
       final jsonString = taskResultToJson(taskResult);
       const expectedJsonString =
-          '{"taskName":"Test Task","minutes":2,"seconds":30,"milliseconds":500}';
+          '{"taskName":"Test Task","minutes":2,"seconds":30,"milliseconds":500,"deviceInfo":"iPhone 7 - iOS 15.8.3"}';
 
       expect(jsonString, equals(expectedJsonString));
     });
