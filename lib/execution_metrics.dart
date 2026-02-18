@@ -4,15 +4,58 @@ library execution_metrics;
 
 import 'package:execution_metrics/mappers/task_result_mapper.dart';
 
+export 'package:execution_metrics/mappers/task_result_mapper.dart';
+
 class ExecutionMetrics {
+  static int boxContentWidth = 68;
+  static int colWidth = 22;
+
   final Stopwatch _stopwatch = Stopwatch();
   String _taskName = "";
   String? _deviceInfo = "";
+  Function(TaskResult)? _callback;
 
-  void start({required String taskName, String? deviceInfo}) {
+  void start({
+    required String taskName,
+    String? deviceInfo,
+    Function(TaskResult)? callback,
+  }) {
     _taskName = taskName;
     _deviceInfo = deviceInfo;
+    _callback = callback;
     _stopwatch.start();
+  }
+
+  static T run<T>({
+    required String taskName,
+    required T Function() action,
+    String? deviceInfo,
+    Function(TaskResult)? callback,
+  }) {
+    final metrics = ExecutionMetrics();
+    metrics.start(
+        taskName: taskName, deviceInfo: deviceInfo, callback: callback);
+    try {
+      return action();
+    } finally {
+      metrics.stop();
+    }
+  }
+
+  static Future<T> runAsync<T>({
+    required String taskName,
+    required Future<T> Function() action,
+    String? deviceInfo,
+    Function(TaskResult)? callback,
+  }) async {
+    final metrics = ExecutionMetrics();
+    metrics.start(
+        taskName: taskName, deviceInfo: deviceInfo, callback: callback);
+    try {
+      return await action();
+    } finally {
+      metrics.stop();
+    }
   }
 
   TaskResult stop() {
@@ -21,7 +64,16 @@ class ExecutionMetrics {
     var minutes = _stopwatch.elapsed.inMinutes;
     var seconds = _stopwatch.elapsed.inSeconds % 60;
     var milliseconds = _stopwatch.elapsed.inMilliseconds % 1000;
-    const int boxContentWidth = 68;
+
+    TaskResult result = TaskResult(
+      taskName: _taskName,
+      minutes: minutes,
+      seconds: seconds,
+      milliseconds: milliseconds,
+      deviceInfo: _deviceInfo,
+    );
+
+    _callback?.call(result);
 
     print('╔${'═' * boxContentWidth}╗');
     print('║${centerText('Execution Result', boxContentWidth)}║');
@@ -35,8 +87,6 @@ class ExecutionMetrics {
       print('║${centerText(_deviceInfo ?? '', boxContentWidth)}║');
     }
 
-    const int colWidth = 22;
-
     print('╠${'═' * colWidth}╦${'═' * colWidth}╦${'═' * colWidth}╣');
 
     print(
@@ -48,13 +98,7 @@ class ExecutionMetrics {
         '║ ${centerText(minutes.toString(), colWidth - 2)} ║ ${centerText(seconds.toString(), colWidth - 2)} ║ ${centerText(milliseconds.toString(), colWidth - 2)} ║');
     print('╚${'═' * colWidth}╩${'═' * colWidth}╩${'═' * colWidth}╝');
 
-    return TaskResult(
-      taskName: _taskName,
-      minutes: minutes,
-      seconds: seconds,
-      milliseconds: milliseconds,
-      deviceInfo: _deviceInfo,
-    );
+    return result;
   }
 
   // Función auxiliar para centrar texto en un ancho dado
