@@ -1,13 +1,4 @@
-class TaskResult {
-  final String taskName;
-  final int minutes;
-  final int seconds;
-  final int milliseconds;
+@Deprecated('Import package:execution_metrics/execution_metrics.dart instead.')
+library;
 
-  TaskResult({
-    required this.taskName,
-    required this.minutes,
-    required this.seconds,
-    required this.milliseconds,
-  });
-}
+export '../src/task_result.dart' show TaskResult;

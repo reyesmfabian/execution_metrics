@@ -1,36 +1,55 @@
-import 'package:execution_metrics/mappers/task_result_mapper.dart';
-import 'package:flutter_test/flutter_test.dart';
+import 'package:execution_metrics/execution_metrics.dart';
+import 'package:test/test.dart';
 
 void main() {
-  TestWidgetsFlutterBinding.ensureInitialized();
-  group('TaskResult', () {
-    test('fromJson', () {
-      const jsonString =
-          '{"taskName":"Test Task","minutes":2,"seconds":30,"milliseconds":500,"deviceInfo": "iPhone 7 - iOS 15.8.3"}';
-
-      final result = taskResultFromJson(jsonString);
-
-      expect(result.taskName, equals('Test Task'));
-      expect(result.minutes, equals(2));
-      expect(result.seconds, equals(30));
-      expect(result.milliseconds, equals(500));
-      expect(result.deviceInfo, equals('iPhone 7 - iOS 15.8.3'));
-    });
+  group('TaskResult JSON', () {
+    const taskResult = TaskResult(
+      taskName: 'Test Task',
+      elapsed: Duration(minutes: 2, seconds: 30, milliseconds: 500),
+      deviceInfo: 'iPhone 7 - iOS 15.8.3',
+    );
 
     test('toJson', () {
-      final taskResult = TaskResult(
-        taskName: 'Test Task',
-        minutes: 2,
-        seconds: 30,
-        milliseconds: 500,
-        deviceInfo: 'iPhone 7 - iOS 15.8.3',
+      expect(
+        taskResultToJson(taskResult),
+        '{"taskName":"Test Task","elapsedMicroseconds":150500000,'
+        '"minutes":2,"seconds":30,"milliseconds":500,'
+        '"deviceInfo":"iPhone 7 - iOS 15.8.3"}',
+      );
+    });
+
+    test('toJson omits a null deviceInfo', () {
+      const noDevice = TaskResult(taskName: 'T', elapsed: Duration.zero);
+
+      expect(noDevice.toJson().containsKey('deviceInfo'), isFalse);
+    });
+
+    test('round trip', () {
+      const noDevice = TaskResult(
+        taskName: 'T',
+        elapsed: Duration(microseconds: 1234567),
       );
 
-      final jsonString = taskResultToJson(taskResult);
-      const expectedJsonString =
-          '{"taskName":"Test Task","minutes":2,"seconds":30,"milliseconds":500,"deviceInfo":"iPhone 7 - iOS 15.8.3"}';
+      expect(taskResultFromJson(taskResultToJson(taskResult)), taskResult);
+      expect(taskResultFromJson(taskResultToJson(noDevice)), noDevice);
+    });
 
-      expect(jsonString, equals(expectedJsonString));
+    test('fromJson accepts the legacy format', () {
+      final result = taskResultFromJson(
+        '{"taskName":"Test Task","minutes":2,"seconds":30,"milliseconds":500,'
+        '"deviceInfo":"iPhone 7 - iOS 15.8.3"}',
+      );
+
+      expect(result, taskResult);
+    });
+
+    test('fromJson keeps a null deviceInfo as null', () {
+      final result = taskResultFromJson(
+        '{"taskName":"T","minutes":0,"seconds":1,"milliseconds":0,"deviceInfo":null}',
+      );
+
+      expect(result.deviceInfo, isNull);
+      expect(result.elapsed, const Duration(seconds: 1));
     });
   });
 }
