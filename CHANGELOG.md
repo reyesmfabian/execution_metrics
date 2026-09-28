@@ -13,16 +13,16 @@
 - Callbacks are typed `void Function(TaskResult)`.
 - Code moved to `lib/src`; import `package:execution_metrics/execution_metrics.dart`. The old `mappers/` and `models/` imports still work but are deprecated.
 
-## 1.2.0
-
-- Added optional `deviceInfo` parameter.
-
 ## 2.0.0
 
 - Added `run` and `runAsync` helpers with named parameters and return value passthrough.
 - Enhanced callback to receive `TaskResult` object.
 - Made print formatting configurable (`ExecutionMetrics.boxContentWidth`, `ExecutionMetrics.colWidth`).
 - **Breaking:** the callback now receives a `TaskResult` instead of the previous value.
+
+## 1.1.0
+
+- Added optional `deviceInfo` parameter.
 
 ## 1.0.1
 
